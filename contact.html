@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Us — What's Their Story?</title>
+  <meta name="description" content="Get in touch with the What's Their Story? team. We'd love to hear from you.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .contact-page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .contact-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .contact-header .emoji { font-size: 3rem; display: block; margin-bottom: 16px; }
+    .contact-header h1 { font-size: 2.4rem; color: var(--tangerine); margin-bottom: 12px; }
+    .contact-header p { color: var(--muted); line-height: 1.65; }
+
+    .contact-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 40px;
+      margin-bottom: 24px;
+    }
+
+    .contact-method {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--sand);
+    }
+
+    .contact-method:last-child { border-bottom: none; padding-bottom: 0; }
+    .contact-method:first-child { padding-top: 0; }
+
+    .cm-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--cream);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .cm-content h3 { font-size: 1rem; margin-bottom: 4px; color: var(--espresso); }
+    .cm-content p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+    .cm-content a {
+      display: inline-block;
+      background: var(--cream);
+      color: var(--tangerine);
+      font-weight: 700;
+      font-size: 0.875rem;
+      padding: 8px 16px;
+      border-radius: 50px;
+      text-decoration: none;
+      border: 1px solid var(--sand);
+      transition: all var(--transition);
+    }
+    .cm-content a:hover { background: var(--tangerine); color: white; border-color: var(--tangerine); opacity: 1; }
+
+    .form-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 40px;
+    }
+
+    .form-card h2 { font-size: 1.4rem; margin-bottom: 8px; color: var(--espresso); }
+    .form-card > p { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
+
+    .form-group { margin-bottom: 20px; }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--bark);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--cream);
+      border: 2px solid var(--sand);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--charcoal);
+      transition: border-color var(--transition);
+      outline: none;
+      appearance: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--tangerine);
+    }
+
+    textarea { resize: vertical; min-height: 120px; }
+
+    .submit-btn {
+      width: 100%;
+      background: var(--tangerine);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      margin-top: 8px;
+    }
+
+    .submit-btn:hover { background: #e85e22; transform: translateY(-1px); }
+
+    .success-msg {
+      display: none;
+      background: #f0fdf4;
+      border: 2px solid #86efac;
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      color: #166534;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .response-note {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body data-page="contact">
+  <div id="nav-placeholder"></div>
+
+  <div class="contact-page">
+    <div class="contact-header">
+      <span class="emoji">💬</span>
+      <h1>Get in Touch</h1>
+      <p>Got a question, spotted a bug, or have an idea to make the app better? We'd love to hear from you.</p>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-method">
+        <div class="cm-icon">📧</div>
+        <div class="cm-content">
+          <h3>Email Us</h3>
+          <p>The best way to reach us for any enquiry. We aim to respond within 2 business days.</p>
+          <a href="mailto:hello@whatstheirstory.com">hello@whatstheirstory.com</a>
+        </div>
+      </div>
+      <div class="contact-method">
+        <div class="cm-icon">🐛</div>
+        <div class="cm-content">
+          <h3>Report a Bug</h3>
+          <p>Something not working? Let us know what happened and we'll get it fixed.</p>
+          <a href="mailto:hello@whatstheirstory.com?subject=Bug%20Report">Report a bug →</a>
+        </div>
+      </div>
+      <div class="contact-method">
+        <div class="cm-icon">💡</div>
+        <div class="cm-content">
+          <h3>Suggest a Feature</h3>
+          <p>Got an idea for a new question category, result type, or feature? We're all ears.</p>
+          <a href="mailto:hello@whatstheirstory.com?subject=Feature%20Idea">Share your idea →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h2>Send us a message</h2>
+      <p>Fill in the form below and we'll get back to you as soon as possible.</p>
+
+      <form id="contact-form" onsubmit="handleSubmit(event)">
+        <div class="form-group">
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" placeholder="What do people call you?" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="your@email.com" required>
+        </div>
+        <div class="form-group">
+          <label for="subject">What's this about?</label>
+          <select id="subject" name="subject">
+            <option value="general">General enquiry</option>
+            <option value="bug">Bug report</option>
+            <option value="feature">Feature suggestion</option>
+            <option value="advertising">Advertising</option>
+            <option value="privacy">Privacy / data request</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" placeholder="Tell us what's on your mind..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Send Message →</button>
+        <div class="success-msg" id="success-msg">
+          ✅ Thanks for getting in touch! We'll respond within 2 business days.
+        </div>
+        <p class="response-note">We'll never share your email with third parties.</p>
+      </form>
+    </div>
+  </div>
+
+  <div id="footer-placeholder"></div>
+  <div id="cookie-placeholder"></div>
+  <script src="shared.js"></script>
+  <script>
+    function handleSubmit(e) {
+      e.preventDefault();
+      // In production, wire this up to a form service like Formspree, Netlify Forms, or EmailJS
+      // For now, open mailto as fallback
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
+
+      const mailtoLink = `mailto:hello@whatstheirstory.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`From: ${name} (${email})\n\n${message}`)}`;
+      window.location.href = mailtoLink;
+
+      document.getElementById('success-msg').style.display = 'block';
+      document.getElementById('contact-form').reset();
+    }
+  </script>
+</body>
+</html>

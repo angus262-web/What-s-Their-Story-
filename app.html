@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Play Now — What's Their Story?</title>
+  <meta name="description" content="Spot a stranger, answer the questions, get their secret life story. Start playing now — free, instant, hilarious.">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--cream); }
+
+    .app-wrapper {
+      min-height: calc(100vh - 64px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px 80px;
+    }
+
+    .app-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 520px;
+      overflow: hidden;
+    }
+
+    /* PROGRESS BAR */
+    .progress-bar-track {
+      height: 6px;
+      background: var(--sand);
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--tangerine), var(--sun));
+      border-radius: 0 3px 3px 0;
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* CARD HEADER */
+    .card-header {
+      padding: 28px 28px 0;
+    }
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .q-counter {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .category-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--sand);
+      color: var(--bark);
+      padding: 4px 12px;
+      border-radius: 50px;
+    }
+
+    .question-text {
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--espresso);
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .question-hint {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    /* ANSWERS */
+    .answers-grid {
+      padding: 0 28px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .answer-btn {
+      background: var(--cream);
+      border: 2px solid var(--sand);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      text-align: left;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      cursor: pointer;
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .answer-btn:hover {
+      border-color: var(--tangerine);
+      background: #fff5ef;
+      transform: translateX(4px);
+    }
+
+    .answer-btn.selected {
+      border-color: var(--tangerine);
+      background: linear-gradient(135deg, #fff5ef, #fff8f2);
+      color: var(--tangerine);
+      font-weight: 700;
+    }
+
+    .answer-emoji { font-size: 1.2rem; flex-shrink: 0; }
+
+    /* START SCREEN */
+    #start-screen {
+      padding: 48px 32px;
+      text-align: center;
+    }
+
+    #start-screen .big-emoji { font-size: 4rem; display: block; margin-bottom: 20px; }
+    #start-screen h2 { font-size: 1.8rem; margin-bottom: 12px; color: var(--espresso); }
+    #start-screen p { color: var(--muted); line-height: 1.65; margin-bottom: 32px; font-size: 0.95rem; }
+
+    .start-tips {
+      background: var(--cream);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .start-tips h4 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--bark);
+      margin-bottom: 12px;
+    }
+
+    .tip { font-size: 0.875rem; color: var(--espresso); margin-bottom: 8px; display: flex; gap: 8px; }
+
+    /* RESULT SCREEN */
+    #result-screen { display: none; }
+
+    .result-header {
+      background: linear-gradient(135deg, var(--tangerine), var(--sun));
+      padding: 40px 28px 32px;
+      text-align: center;
+      color: white;
+    }
+
+    .result-header .result-emoji { font-size: 3rem; display: block; margin-bottom: 12px; }
+
+    .result-name-display {
+      font-family: 'Fraunces', serif;
+      font-weight: 900;
+      font-size: 2rem;
+      margin-bottom: 4px;
+    }
+
+    .result-tagline {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      font-style: italic;
+    }
+
+    .result-body { padding: 28px; }
+
+    .result-story {
+      background: var(--cream);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--espresso);
+      margin-bottom: 24px;
+      border-left: 4px solid var(--sun);
+    }
+
+    .result-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .result-stat-box {
+      background: var(--cream);
+      border-radius: var(--radius-sm);
+      padding: 16px 8px;
+      text-align: center;
+    }
+
+    .result-stat-box .pct {
+      font-family: 'Fraunces', serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      color: var(--tangerine);
+      display: block;
+    }
+
+    .result-stat-box .lbl {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.3;
+      margin-top: 2px;
+    }
+
+    .result-verdict {
+      background: linear-gradient(135deg, #fff5ef, #fff8ee);
+      border: 2px solid var(--sand);
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .result-verdict .verdict-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .result-verdict .verdict-text {
+      font-family: 'Fraunces', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--tangerine);
+    }
+
+    .result-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-share {
+      background: var(--tangerine);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-share:hover { background: #e85e22; transform: translateY(-1px); }
+
+    .btn-again {
+      background: var(--cream);
+      color: var(--bark);
+      border: 2px solid var(--sand);
+      border-radius: 50px;
+      padding: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .btn-again:hover { border-color: var(--tangerine); color: var(--tangerine); }
+
+    /* ANIMATIONS */
+    .fade-in {
+      animation: fadeInUp 0.35s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .copy-toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--espresso);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    .copy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body data-page="app">
+  <div id="nav-placeholder"></div>
+
+  <div class="app-wrapper">
+    <div class="app-card">
+
+      <!-- START SCREEN -->
+      <div id="start-screen">
+        <span class="big-emoji">👀</span>
+        <h2>Pick your stranger.</h2>
+        <p>Look around you right now. Choose someone interesting nearby — on the train, bus, platform, or waiting room. Then answer 8 quick questions about what you observe.</p>
+
+        <div class="start-tips">
+          <h4>🔍 What to look for</h4>
+          <div class="tip">👟 <span>Their shoes tell you <em>everything.</em></span></div>
+          <div class="tip">🎒 <span>What are they carrying? Work bag? Suspicious holdall?</span></div>
+          <div class="tip">😶 <span>What's their face doing right now?</span></div>
+          <div class="tip">📱 <span>Phone out? Headphones in? Staring into the void?</span></div>
+        </div>
+
+        <p style="font-size:0.8rem; color:var(--muted); margin-bottom:24px;">
+          🎭 <em>All stories are 100% fictional and generated for entertainment only. Please be discreet — no staring!</em>
+        </p>
+
+        <button class="btn-primary" style="width:100%; padding:16px; font-size:1.05rem;" onclick="startApp()">
+          I've spotted someone → Begin
+        </button>
+      </div>
+
+      <!-- QUIZ SCREEN -->
+      <div id="quiz-screen" style="display:none;">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <div class="card-header">
+          <div class="question-meta">
+            <span class="q-counter" id="q-counter">Question 1 of 8</span>
+            <span class="category-badge" id="q-category">Appearance</span>
+          </div>
+          <div class="question-text" id="q-text">Loading...</div>
+          <div class="question-hint" id="q-hint"></div>
+        </div>
+        <div class="answers-grid" id="answers-grid"></div>
+      </div>
+
+      <!-- RESULT SCREEN -->
+      <div id="result-screen">
+        <div class="result-header">
+          <span class="result-emoji" id="r-emoji">🧍</span>
+          <div class="result-name-display" id="r-name">Loading...</div>
+          <div class="result-tagline" id="r-tagline"></div>
+        </div>
+        <div class="result-body">
+          <div class="result-story" id="r-story"></div>
+          <div class="result-stats-grid" id="r-stats"></div>
+          <div class="result-verdict">
+            <div class="verdict-label">Overall Verdict</div>
+            <div class="verdict-text" id="r-verdict"></div>
+          </div>
+          <div class="result-actions">
+            <button class="btn-share" onclick="shareResult()">📤 Share This Story</button>
+            <button class="btn-again" onclick="resetApp()">🔄 Spot Another Stranger</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="copy-toast" id="copy-toast">✅ Copied to clipboard!</div>
+  <div id="footer-placeholder"></div>
+  <div id="cookie-placeholder"></div>
+  <script src="shared.js"></script>
+  <script>
+  // =============================================
+  // WHAT'S THEIR STORY — App Logic
+  // =============================================
+
+  const QUESTIONS = [
+    {
+      id: 'shoes',
+      category: 'Appearance',
+      text: 'What are their shoes saying?',
+      hint: 'Look carefully — shoes never lie.',
+      answers: [
+        { emoji: '👟', text: 'Scruffy trainers, clearly loved', value: 'casual_worn' },
+        { emoji: '👞', text: 'Smart shoes, slight scuff', value: 'smart_scuffed' },
+        { emoji: '🥾', text: 'Sturdy boots, mean business', value: 'boots' },
+        { emoji: '👠', text: 'Heels / dressy shoes', value: 'dressy' },
+        { emoji: '🩴', text: 'Trainers, box fresh', value: 'new_trainers' },
+        { emoji: '❓', text: "Can't see their feet", value: 'unknown_shoes' },
+      ]
+    },
+    {
+      id: 'bag',
+      category: 'Luggage',
+      text: "What's the bag situation?",
+      hint: 'The bag is a portal to the soul.',
+      answers: [
+        { emoji: '💼', text: 'Smart work briefcase / laptop bag', value: 'work_bag' },
+        { emoji: '🎒', text: 'Battered rucksack with keyrings', value: 'rucksack' },
+        { emoji: '🛍️', text: 'Shopping bags, mission mode', value: 'shopping' },
+        { emoji: '👜', text: 'Nice handbag / man-bag, cared for', value: 'nice_bag' },
+        { emoji: '🧳', text: 'Rolling suitcase / overnight bag', value: 'suitcase' },
+        { emoji: '🚫', text: 'No bag at all — free spirit', value: 'no_bag' },
+      ]
+    },
+    {
+      id: 'expression',
+      category: 'Vibe',
+      text: "What's their face doing?",
+      hint: 'The inner world leaks through.',
+      answers: [
+        { emoji: '😐', text: 'Total blank — veteran commuter', value: 'blank' },
+        { emoji: '😤', text: 'Quietly furious about something', value: 'annoyed' },
+        { emoji: '😴', text: 'Half asleep, heroically hanging on', value: 'tired' },
+        { emoji: '📖', text: 'Focused — reading or working', value: 'focused' },
+        { emoji: '😊', text: 'Strangely cheerful for this hour', value: 'happy' },
+        { emoji: '😳', text: 'Looking around nervously', value: 'nervous' },
+      ]
+    },
+    {
+      id: 'phone',
+      category: 'Behaviour',
+      text: "What's the phone / device situation?",
+      hint: 'Their screen is a window.',
+      answers: [
+        { emoji: '🎵', text: 'Headphones in, own world', value: 'headphones' },
+        { emoji: '📱', text: 'Scrolling intensely (social media)', value: 'scrolling' },
+        { emoji: '📧', text: 'Typing — emails or messages', value: 'typing' },
+        { emoji: '🎮', text: 'Gaming', value: 'gaming' },
+        { emoji: '📚', text: 'Reading — book, Kindle or article', value: 'reading' },
+        { emoji: '👁️', text: 'No device — just staring', value: 'no_phone' },
+      ]
+    },
+    {
+      id: 'clothes',
+      category: 'Appearance',
+      text: 'How would you describe their general style?',
+      hint: "Clothes are the costume they've chosen for today.",
+      answers: [
+        { emoji: '👔', text: 'Corporate — smart, presentable', value: 'corporate' },
+        { emoji: '🧥', text: 'Casual but put-together', value: 'smart_casual' },
+        { emoji: '🩳', text: 'Definitely didn\'t overthink this', value: 'casual_unbothered' },
+        { emoji: '🎨', text: 'Creative / unusual / interesting', value: 'creative' },
+        { emoji: '⚫', text: 'All black, not taking questions', value: 'all_black' },
+        { emoji: '🏋️', text: 'Sports / gym wear', value: 'sporty' },
+      ]
+    },
+    {
+      id: 'drink',
+      category: 'Props',
+      text: 'Any food or drink visible?',
+      hint: 'Fuel reveals personality.',
+      answers: [
+        { emoji: '☕', text: 'Coffee — likely their third', value: 'coffee' },
+        { emoji: '🧃', text: 'Healthy drink / water bottle', value: 'healthy' },
+        { emoji: '🥐', text: 'Eating breakfast on the go', value: 'breakfast' },
+        { emoji: '🚫', text: 'Nothing — they\'re disciplined', value: 'nothing' },
+        { emoji: '🧋', text: 'Some sort of fancy drink', value: 'fancy_drink' },
+        { emoji: '🍫', text: 'Snacks. Unabashedly.', value: 'snacks' },
+      ]
+    },
+    {
+      id: 'posture',
+      category: 'Body Language',
+      text: "What's their posture / energy like?",
+      hint: 'The body broadcasts what the face tries to hide.',
+      answers: [
+        { emoji: '🧱', text: 'Rigid — taking up minimum space', value: 'rigid' },
+        { emoji: '🛋️', text: 'Sprawled — fully comfortable', value: 'sprawled' },
+        { emoji: '🏃', text: 'On edge — might bolt any second', value: 'on_edge' },
+        { emoji: '🙏', text: 'Perfectly still — suspiciously calm', value: 'zen' },
+        { emoji: '😮‍💨', text: 'Sighing a lot. A lot.', value: 'sighing' },
+        { emoji: '👀', text: 'Watching everyone else (like you)', value: 'watching' },
+      ]
+    },
+    {
+      id: 'age',
+      category: 'Profile',
+      text: 'Rough age range?',
+      hint: "Don't overthink it — just your gut feeling.",
+      answers: [
+        { emoji: '🧒', text: 'Under 25 — young energy', value: 'young' },
+        { emoji: '🧑', text: '25–35 — figuring it out', value: 'mid20s' },
+        { emoji: '🧑‍💼', text: '35–50 — mid-game', value: 'mid' },
+        { emoji: '🧓', text: '50–65 — peak confidence era', value: 'older' },
+        { emoji: '👴', text: '65+ — seen it all', value: 'senior' },
+        { emoji: '🤷', text: "Genuinely can't tell", value: 'unknown_age' },
+      ]
+    },
+  ];
+
+  // ---- RESULT ENGINE ----
+
+  const FIRST_NAMES = {
+    corporate: ['Dominic','Victoria','Marcus','Charlotte','Jeremy','Amanda','Phillip','Stephanie'],
+    smart_casual: ['Tom','Sarah','Ben','Emma','Alex','Laura','James','Chloe'],
+    casual_unbothered: ['Dave','Sharon','Gary','Tracey','Kev','Donna','Barry','Linda'],
+    creative: ['Rafferty','Isla','Cosmo','Juniper','Felix','Orla','Ziggy','Asha'],
+    all_black: ['N.','V.','D.','C.','X.','Z.','Raven','Morrow'],
+    sporty: ['Jake','Steph','Liam','Jess','Connor','Amy','Ryan','Becky'],
+    default: ['Gerald','Margaret','Trevor','Susan','Clive','Brenda','Derek','Pauline'],
+  };
+
+  const AGES = { young:'22', mid20s:'29', mid:'43', older:'57', senior:'71', unknown_age:'??' };
+
+  const JOBS = {
+    work_bag: ['regional compliance auditor','middle manager in a company no one has heard of','HR business partner who\'s seen things','procurement specialist'],
+    rucksack: ['secondary school teacher','graphic designer between briefs','podcast producer','junior developer'],
+    shopping: ['professional shopper for someone else','estate agent on their day off','person who definitely meal preps'],
+    nice_bag: ['brand consultant','architect','someone in "communications"','lifestyle influencer (small following)'],
+    suitcase: ['pharmaceutical sales rep','someone visiting a complicated sibling','person who travels for reasons they can\'t fully explain'],
+    no_bag: ['philosopher','someone who left their bag somewhere and hasn\'t told anyone yet','retired, doesn\'t care anymore'],
+    default: ['assistant to the regional manager','person with an unusually specific niche career'],
+  };
+
+  const HOBBIES = [
+    'amateur beekeeper','true crime podcast addict','competitive Scrabble player',
+    'weekend wild swimmer','person who has strong opinions about sourdough starter',
+    'secret novelist (draft never finished)','enthusiastic but mediocre golfer',
+    'someone learning Portuguese for reasons unclear even to them',
+    'collector of vintage maps','person who does karaoke with unusual commitment',
+    'allotment holder (mostly runner beans)','obsessive reader of Wikipedia rabbit holes',
+    'home brewer of ales of questionable quality','yoga practitioner (sporadic)',
+  ];
+
+  const SECRETS = [
+    'is currently winning an argument in their head','has a shed that is their true home',
+    'knows exactly how many calories are in that coffee','is writing a strongly-worded letter to a company',
+    'has an opinion about roundabouts that they will share unprompted',
+    'recently watched a documentary that changed their life (for two days)',
+    'considers themselves an excellent driver',
+    'has a nickname at work that they don\'t know about',
+    'has a very detailed emergency plan that no one else knows about',
+    'is currently deciding whether to get a dog',
+    'genuinely believes they could win MasterChef',
+    'recently started a newsletter (four subscribers, two are family)',
+  ];
+
+  const VERDICTS = [
+    'Deeply Normal in the Best Way',
+    'Quietly Fascinating',
+    'Certified Character',
+    'Definitely Has a Podcast',
+    'The Backbone of Society',
+    'Harmlessly Odd',
+    'Living Their Best Mediocre Life',
+    'One Interesting Story if You Ask',
+    'Suspiciously Together',
+    'Carries a Thermos and Has Opinions',
+  ];
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function pct(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  function generateStory(answers) {
+    const style = answers.clothes || 'default';
+    const bag = answers.bag || 'default';
+    const age = AGES[answers.age] || '??';
+    const expression = answers.expression;
+    const phone = answers.phone;
+
+    const nameList = FIRST_NAMES[style] || FIRST_NAMES.default;
+    const name = pick(nameList);
+    const job = pick(JOBS[bag] || JOBS.default);
+    const hobby = pick(HOBBIES);
+    const secret = pick(SECRETS);
+    const hobby2 = pick(HOBBIES.filter(h => h !== hobby));
+
+    const expressionLines = {
+      blank: 'Their expression reveals nothing — a skill honed over years of commuting.',
+      annoyed: 'There is a low-level irritation today. Something specific happened. They haven\'t mentioned it.',
+      tired: 'They are running on caffeine and muscle memory.',
+      focused: 'They are unusually focused — clearly on a mission.',
+      happy: 'Inexplicably cheerful. Something good happened. Or they\'re on medication.',
+      nervous: 'Slightly on edge. Possibly important meeting. Possibly just their face.',
+    };
+
+    const phoneLines = {
+      headphones: 'Currently unreachable by all known means of communication.',
+      scrolling: 'Engaged in serious digital business that is definitely not memes.',
+      typing: 'Composing a message with unusual speed and intensity.',
+      gaming: 'Managing a virtual world with the focus they should apply to real life.',
+      reading: 'Doing something admirable, at least by commute standards.',
+      no_phone: 'Sitting with their own thoughts like some sort of Victorian.',
+    };
+
+    const story = `Meet ${name}, ${age}. ${name} is a ${job} and passionate ${hobby}. Also, secretly, a ${hobby2}.
+
+${expressionLines[expression] || ''} ${phoneLines[phone] || ''}
+
+${name} ${secret}.`;
+
+    const stats = [
+      { pct: pct(55, 97), label: 'Probably harmless' },
+      { pct: pct(30, 95), label: 'Has a strong opinion about something mundane' },
+      { pct: pct(40, 90), label: answers.bag === 'work_bag' ? 'Dreaming of quitting' : 'Judging your shoes right now' },
+    ];
+
+    const emoji = ['🧍','🧑‍💼','🎭','🕵️','🧙','🦸','🎪','🎠'][Math.floor(Math.random() * 8)];
+    const tagline = `${pick(['Probably', 'Definitely', 'Almost certainly', 'Possibly'])} ${pick(['a ${hobby}'.replace('${hobby}', hobby), `one of life's ${pick(['quiet heroes','great mysteries','underrated people'])}`, 'more interesting than they look'])}`;
+    const verdict = pick(VERDICTS);
+
+    return { name, age, story, stats, emoji, tagline: tagline.replace(/\$\{.*?\}/g,''), verdict };
+  }
+
+  // ---- APP STATE ----
+  let currentQ = 0;
+  let answers = {};
+  const TOTAL = QUESTIONS.length;
+
+  function startApp() {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    currentQ = 0;
+    answers = {};
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const q = QUESTIONS[currentQ];
+    const pct = ((currentQ) / TOTAL) * 100;
+
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('q-counter').textContent = `Question ${currentQ + 1} of ${TOTAL}`;
+    document.getElementById('q-category').textContent = q.category;
+    document.getElementById('q-hint').textContent = q.hint;
+
+    const qText = document.getElementById('q-text');
+    qText.classList.remove('fade-in');
+    void qText.offsetWidth;
+    qText.textContent = q.text;
+    qText.classList.add('fade-in');
+
+    const grid = document.getElementById('answers-grid');
+    grid.innerHTML = '';
+    grid.classList.remove('fade-in');
+    void grid.offsetWidth;
+    grid.classList.add('fade-in');
+
+    q.answers.forEach(a => {
+      const btn = document.createElement('button');
+      btn.className = 'answer-btn';
+      btn.innerHTML = `<span class="answer-emoji">${a.emoji}</span><span>${a.text}</span>`;
+      btn.onclick = () => selectAnswer(q.id, a.value, btn);
+      grid.appendChild(btn);
+    });
+  }
+
+  function selectAnswer(qId, value, btn) {
+    answers[qId] = value;
+
+    document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+
+    setTimeout(() => {
+      currentQ++;
+      if (currentQ < TOTAL) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }, 350);
+  }
+
+  function showResult() {
+    document.getElementById('progress-fill').style.width = '100%';
+    setTimeout(() => {
+      document.getElementById('quiz-screen').style.display = 'none';
+      const resultEl = document.getElementById('result-screen');
+      resultEl.style.display = 'block';
+      resultEl.classList.add('fade-in');
+
+      const result = generateStory(answers);
+
+      document.getElementById('r-emoji').textContent = result.emoji;
+      document.getElementById('r-name').textContent = `${result.name}, ${result.age}`;
+      document.getElementById('r-tagline').textContent = result.tagline;
+      document.getElementById('r-story').innerHTML = result.story.replace(/\n\n/g, '<br><br>');
+      document.getElementById('r-verdict').textContent = result.verdict;
+
+      const statsGrid = document.getElementById('r-stats');
+      statsGrid.innerHTML = result.stats.map(s => `
+        <div class="result-stat-box">
+          <span class="pct">${s.pct}%</span>
+          <span class="lbl">${s.label}</span>
+        </div>
+      `).join('');
+
+      // Store for sharing
+      window._lastResult = result;
+    }, 300);
+  }
+
+  function shareResult() {
+    const r = window._lastResult;
+    if (!r) return;
+    const text = `🕵️ What's Their Story?\n\nI spotted someone on my commute...\n\nMeet ${r.name}, ${r.age} — ${r.verdict}\n\n${r.story.split('\n\n')[0]}\n\nPlay at whatstheirstory.com`;
+    if (navigator.share) {
+      navigator.share({ title: "What's Their Story?", text });
+    } else {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('copy-toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      });
+    }
+  }
+
+  function resetApp() {
+    document.getElementById('result-screen').style.display = 'none';
+    document.getElementById('start-screen').style.display = 'block';
+    currentQ = 0;
+    answers = {};
+    document.getElementById('progress-fill').style.width = '0%';
+  }
+  </script>
+</body>
+</html>
